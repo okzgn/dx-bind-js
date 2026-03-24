@@ -1,0 +1,47 @@
+{
+  "name": "dx-bind",
+  "version": "2.0.0",
+  "description": "A lightweight, framework-agnostic, zero-dependency utility designed to simplify dynamic dependency injection and property binding.",
+  "type": "module",
+  "main": "index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "keywords": [
+    "DX",
+    "Developer",
+    "Experience",
+    "Dynamic-dependencies",
+    "DI",
+    "Dependency-injection",
+    "Property-binding",
+    "Framework-agnostic",
+    "Lightweight",
+    "Zero-dependency",
+    "Dependency-free",
+    "Angular"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "sideEffects": true,
+  "license": "MIT",
+  "author": "OKZGN",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okzgn/dx-bind-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/okzgn/dx-bind-js/issues"
+  },
+  "homepage": "https://github.com/okzgn/dx-bind-js#readme"
+}
