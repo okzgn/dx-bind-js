@@ -2,7 +2,7 @@
 
 DX Bind is a lightweight, framework-agnostic, zero-dependency utility designed to simplify dynamic dependency injection and property binding. Making it a perfect companion for Angular, React, Vue, Node.js, or pure Vanilla JavaScript environments.
 
-It allows you to centralize your dependencies and bind them into your classes or objects at runtime with minimal boilerplate.
+It allows you to centralize your dependencies and bind them into your objects, functions or classes at runtime with minimal boilerplate.
 
 ## 💡 Features
 
@@ -11,6 +11,13 @@ It allows you to centralize your dependencies and bind them into your classes or
 *   **Namespaced Binding:** Organize your dependencies into modules (e.g., `services`, `config`, `utils`) and keep your target objects clean.
 *   **Zero Dependencies:** Tiny footprint, pure JavaScript/TypeScript.
 *   **Dynamic:** Supports both class-based injection (using your own injection strategy) and instance-based property binding (binding to `this`).
+
+## ⚡ The 3-Level Pipeline
+Processes dependencies through a 3-level transformation pipeline, giving you full control over the lifecycle:
+
+1. **upperMode (Target):** Processes the main object, function or class before binding. Perfect for instantiation (e.g., `(target) => new target()`).
+2. **middleMode (Namespace):** Processes the namespace container. Perfect for creating proxies or defining specific object structures.
+3. **lowerMode (Property):** Processes namespace property values. Perfect for Lazy Loading, Logging, or Type Conversion.
 
 ## 🚀 Installation
 
@@ -22,7 +29,7 @@ npm install dx-bind
 ## 📖 Usage
 
 ### 1. Configure the Registry
-Centralize your services, objects, or classes. You can call Registry multiple times to merge new dependencies into the existing global source.
+Centralize your services, objects, or classes. You can call `Registry` multiple times to merge new dependencies into the existing global source dependencies.
 
 ```typescript
 import { Registry } from 'dx-bind';
@@ -37,26 +44,28 @@ Registry({
   }
 });
 ```
-### 2. Bind to a Class or Instance
-You can bind dependencies to a class constructor or directly to an existing instance (`this`).
+### 2. Bind to an Object, Function or Class
+You can bind dependencies to an empty object, function or class, or directly to an existing instance (like `this`).
 
 ```typescript
 import { Bind } from 'dx-bind';
 
-// Example: Using in an Angular-like context with an injection strategy
+// Example: Using in an Angular-like context
 export class MyComponent {
   constructor() {
-    // Automatically binds 'service' and 'config' modules to 'this'
-    Bind(this, inject); 
+    // Using lowerMode for property values transformation
+    Bind(this, {
+      lowerMode: (value) => {
+        return typeof value === 'function' ? new value() : value;
+      }
+    });
     
-    // Now you can access them directly:
-    // this.service.auth.login();
-    // console.log(this.config.apiUrl);
+    // Bind specific namespaces
+    Bind(this, { namespaces: ['service', 'config'] });
   }
 }
 
-// Or:
-// Usage in Vanilla JS (No DI framework needed)
+// Usage in Vanilla JS
 class App {
   constructor() {
     Bind(this); // Binds everything to 'this' automatically
@@ -66,16 +75,42 @@ class App {
 ```
 ## 📖 API
 
-### `Registry(objectToBind)`
-Configures the global source of dependencies.
+### `Registry(dataToMerge, options?)`
+Merges new data into the global source dependencies and returns the current data for merging.
 
-### `Bind(target, mode?, fallbackMode?)`
-- `target`: The object or class constructor.
-- `mode`: (Optional) Either an injection function (e.g., `inject`) or an array of module names. **If omitted, all modules in the Registry are bound.**
-- `fallbackMode`: (Optional) The default injection strategy if `mode` is used as an array of modules.
+### `SetRegistry(dataToBind, options?)`
+Replaces the global source of dependencies and returns previous source.
+
+### EmptyRegistry()
+Clears the global source of dependencies.
+
+### `Bind(target, options?)`
+Binds all the global source dependencies to the target using the pipeline. 
+
+- `target`: The target object, function or class constructor to bind dependencies.
+- `options`: **Optional**. An object with the following properties:
+  - `upperMode`: **Function (target: any, globalSource:any) => any**
+    - Strategy function for target processing.
+  - `middleMode`: **Function (namespace: any, previousNamespace:any) => any**
+    - Strategy function for namespace containers processing.
+  - `lowerMode`: **Function (property: any, previousProperty:any) => any**
+    - Strategy function for namespace property values processing.
+
+  - `namespaces`: **Array<string|symbol>**.
+    - Specific dependency names to bind. **If omitted, all dependencies in the global source are bound.**
+  - `raw`: **Boolean**.
+    - Default is `false`. If `true`, bypasses the reserved properties blacklist.
+  - `silent`: **Boolean**.
+    - Default is `false`. If `true`, don't throw errors on `upperMode` and `middleMode` pipelines, only error logs.
+  - `internalSilent`: **Boolean**.
+    - Default is `false`. If `true`, don't throw errors on `lowerMode` pipeline, only error logs.
+  - `symbol`: **Boolean**.
+    - Default is `true`. If `false`, `symbols` not be accepted on `middleMode` namespaces.
+  - `internalSymbol`: **Boolean**.
+    - Default is `true`. If `false`, `symbols` not be accepted on `lowerMode` properties.
 
 ## Security
-This package implements strict `hasOwnProperty` checks and a blacklist to prevent the binding of internal JavaScript properties like `__proto__`, `prototype`, and `constructor`, ensuring your objects remain secure and stable.
+This package implements a contextual, type-based prevention, that automatically identifies data types (`Functions`, `Arrays`, `Objects`) and restricts the binding of critical metadata (like `__proto__`, `prototype`, `constructor`, `name`, `length`, ...), ensuring your data remain secure and stable against Prototype Pollution.
 
 ---
 
