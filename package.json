@@ -1,6 +1,6 @@
 {
   "name": "dx-bind",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A lightweight, framework-agnostic, zero-dependency utility designed to simplify dynamic dependency injection and property binding.",
   "type": "module",
   "main": "index.js",
