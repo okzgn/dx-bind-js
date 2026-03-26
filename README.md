@@ -76,13 +76,21 @@ class App {
 ## 📖 API
 
 ### `Registry(dataToMerge, options?)`
-Merges new data into the global source dependencies and returns the current data for merging.
+Merges new data into the global source dependencies and returns the current data for merging. It starts as a completely plain object.
+- `options`: **Optional**. An object with the following properties:
+  - `silent`: **Boolean**.
+    - Default is `false`. If `true`, don't throw errors, only error logs.
 
 ### `SetRegistry(dataToBind, options?)`
 Replaces the global source of dependencies and returns previous source.
+- `options`: **Optional**. An object with the following properties:
+  - `raw`: **Boolean**.
+    - Default is `false`. If `true`, replaces the global source dependencies with `dataToBind` as it is. By default it is converted to completely plain object.
+  - `silent`: **Boolean**.
+    - Default is `false`. If `true`, don't throw errors, only error logs.
 
-### EmptyRegistry()
-Clears the global source of dependencies.
+### `EmptyRegistry()`
+Clears the global source of dependencies with a completely empty object.
 
 ### `Bind(target, options?)`
 Binds all the global source dependencies to the target using the pipeline. 
